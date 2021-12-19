@@ -1,0 +1,35 @@
+<nav class="navbar navbar-expand navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">EventJepp</a>
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+                <a class="nav-link <% if (url === '/') { %> active <% } %>" <% if (url === '/') { %> aria-current="page" <% } %> href="/">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link <% if (url === '/about') { %> active <% } %>" <% if (url === '/about') { %> aria-current="page" <% } %> href="/about">About</a>
+            </li>
+        </ul>
+
+        <% if (locals.user) { %>
+            <div class="btn-group float-end">
+                <a href="#" class="dropdown-toggle text-decoration-none text-light" data-bs-toggle="dropdown">
+                    <img src="<%= locals.user.profileImage %>" alt="Generic placeholder image" class="img-fluid rounded-circle border border-light border-3" style="width: 45px;">
+                    <span><%= locals.user.displayName %></span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a href="/preferences" class="dropdown-item"><i class="bi bi-gear-fill"></i> Preferences</a></li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <li><a href="/logout" class="dropdown-item"><i class="bi bi-box-arrow-right"></i> Sign out</a></li>
+                </ul>
+            </div>
+        <% } else { %>
+            <div class="btn float-end">
+                <a href="/auth" class="text-decoration-none text-light">
+                    <span>Sign in with Twitch</span>
+                </a>
+            </div>
+        <% } %>
+    </div>
+</nav>

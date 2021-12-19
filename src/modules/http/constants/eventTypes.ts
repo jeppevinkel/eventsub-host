@@ -1,0 +1,18 @@
+export const EventTypes = {
+    follow: 'channel.follow',
+    ban: 'channel.ban',
+    unban: 'channel.unban',
+    channelPointsAddReward: 'channel.channel_points_custom_reward.add',
+    channelPointsUpdateReward: 'channel.channel_points_custom_reward.update',
+    channelPointsRemoveReward: 'channel.channel_points_custom_reward.remove',
+    channelPointsRedeemReward: 'channel.channel_points_custom_reward_redemption.add',
+    channelPointsUpdateRedemption: 'channel.channel_points_custom_reward_redemption.update',
+    channelUpdate: 'channel.update',
+    channelCheer: 'channel.cheer',
+    channelGoalBegin: 'channel.goal.begin',
+    channelGoalProgress: 'channel.goal.progress',
+    channelGoalEnd: 'channel.goal.end',
+    channelHypeTrainBegin: 'channel.hype_train.begin',
+    channelHypeTrainProgress: 'channel.hype_train.progress',
+    channelHypeTrainEnd: 'channel.hype_train.end',
+}

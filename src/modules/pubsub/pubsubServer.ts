@@ -2,9 +2,9 @@ import http from "http";
 import * as WebSocket from "websocket";
 import {Logger, LogManager} from "../logging";
 import {IAuthentication, IMessage, IResponse} from "./interfaces/messages";
-import {ERR_BADMESSAGE} from "../../constants/errors";
+import {ErrorTypes} from '../../constants/errors'
 import {MessageTypes} from "./constants/messageTypes";
-import * as ping from "./messageHandlers/ping";
+// import * as ping from "./messageHandlers/ping";
 import {ConnectionInfo} from "./models/connectionInfo";
 import {Main} from "../../index";
 
@@ -27,7 +27,7 @@ export class PubsubServer {
         })
     }
 
-    constructor(main: Main, port: number, httpServer?: http.Server) {
+    constructor(main: Main, port: number, pingInterval: number, httpServer?: http.Server) {
         let self = this
         this.main = main
         let logger = main.logManager.getLogger('pubsub')
@@ -55,16 +55,19 @@ export class PubsubServer {
             let connection = request.accept(undefined, request.origin)
             let newConnectionInfo = new ConnectionInfo()
             logger.debug(request.httpRequest.headers)
-            // newConnectionInfo.timeoutInterval = setInterval(function () {
-            //     if (Date.now() - newConnectionInfo.lastPing > 3000) {
-            //         if (newConnectionInfo.timeoutInterval) {
-            //             clearInterval(newConnectionInfo.timeoutInterval[Symbol.toPrimitive]())
-            //         }
-            //
-            //         self.connections.delete(connection)
-            //         connection.close(1000, 'Closed due to no activity')
-            //     }
-            // }, 3000)
+
+            if (pingInterval > 0) {
+                newConnectionInfo.timeoutInterval = setInterval(function () {
+                    if (Date.now() - newConnectionInfo.lastPing > pingInterval) {
+                        if (newConnectionInfo.timeoutInterval) {
+                            clearInterval(newConnectionInfo.timeoutInterval[Symbol.toPrimitive]())
+                        }
+
+                        self.connections.delete(connection)
+                        connection.close(1000, 'Closed due to no activity')
+                    }
+                }, 3000)
+            }
 
             self.connections.set(connection, newConnectionInfo)
 
@@ -85,14 +88,28 @@ export class PubsubServer {
                 logger.debug(`Received ${rawMessage}`)
 
 
-                let pubsubMessage: IMessage = JSON.parse(rawMessage)
+                let pubsubMessage!: IMessage
+
+                try {
+                    pubsubMessage = JSON.parse(rawMessage)
+                } catch (e: any) {
+                    logger.error(`Failed to parse message: ${rawMessage}`)
+                    let response: IResponse = {
+                        type: "RESPONSE",
+                        error: ErrorTypes.InvalidMessage,
+                        message: e.message,
+                    }
+                    connection.sendUTF(JSON.stringify(response))
+                    return
+                }
 
                 if (!pubsubMessage.type) {
                     logger.warn('Received invalid json')
                     let response: IResponse = {
                         type: "RESPONSE",
                         nonce: pubsubMessage.nonce,
-                        error: ERR_BADMESSAGE
+                        error: ErrorTypes.InvalidMessage,
+                        message: "Received invalid data",
                     }
                     connection.sendUTF(JSON.stringify(response))
                     return
@@ -105,7 +122,7 @@ export class PubsubServer {
             connection.on('close', function (reasonCode, description) {
                 logger.info(`Peer ${connection.remoteAddress} disconnected`)
 
-                if (self.connections.has(connection)) self.connections.delete(connection)
+                self.connections.delete(connection)
             })
         })
     }
@@ -122,7 +139,8 @@ export class PubsubServer {
                 let response: IResponse = {
                     type: MessageTypes.response,
                     nonce: message.nonce,
-                    error: ERR_BADMESSAGE
+                    error: ErrorTypes.InvalidMessage,
+                    message: `Unknown message type: ${message.type}`,
                 }
                 connection.sendUTF(JSON.stringify(response))
                 break
@@ -130,11 +148,10 @@ export class PubsubServer {
     }
 
     private handlePingMessage(message: IMessage, connection: WebSocket.connection) {
-        let info = this.connections.get(connection)
-        if (info == undefined) info = new ConnectionInfo()
+        let info = this.connections.get(connection) as ConnectionInfo
 
+        this.logger.debug(`Received ping from ${connection.remoteAddress}, last ping: ${info.lastPing}`)
         info.lastPing = Date.now()
-        this.connections.set(connection, info)
         let response: IResponse = {
             type: MessageTypes.pong,
             nonce: message.nonce,
@@ -143,20 +160,28 @@ export class PubsubServer {
     }
 
     private async handleAuthenticationMessage(message: IAuthentication, connection: WebSocket.connection) {
-        let info = this.connections.get(connection)
-        if (info == undefined) info = new ConnectionInfo()
+        let info = this.connections.get(connection) as ConnectionInfo
 
         let response: IResponse = {
             type: MessageTypes.response,
             nonce: message.nonce,
         }
 
-        let id = await this.main.database.userDAO.getIdFromToken(message.authToken)
+        if (!message.token) {
+            response.error = ErrorTypes.InvalidMessage
+            response.message = "Missing token"
+            connection.sendUTF(JSON.stringify(response))
+            return
+        }
+
+        let id = await this.main.database.userDAO.getIdFromToken(message.token)
         if (id) {
-            info.setToken(message.authToken)
+            info.setToken(message.token)
             info.setUserId(id)
+            response.message = "Authenticated"
         } else {
-            response.error = "Invalid token"
+            response.error = ErrorTypes.InvalidToken
+            response.message = "Invalid token"
         }
         connection.sendUTF(JSON.stringify(response))
     }

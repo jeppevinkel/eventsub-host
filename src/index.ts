@@ -18,7 +18,7 @@ export class Main {
     constructor(port: number) {
         this.logManager = Logging.configure({
             minLevels: {
-                '': 'info',
+                '': 'debug',
                 'core': 'trace',
                 'pubsub': 'debug',
                 'http': 'debug',
@@ -27,10 +27,12 @@ export class Main {
         }).registerConsoleLogger()
         this.logger = this.logManager.getLogger('core')
 
+        const pubsubTimeoutInterval = Number(process.env.PING_INTERVAL ?? -1) * 1000
+
         this.logger.info(`Starting application using port ${port}...`)
         this.database = new Database(this)
         this.webServer = new WebServer(this, port)
-        this.pubsubServer = new PubsubServer(this, port, this.webServer.server)
+        this.pubsubServer = new PubsubServer(this, port, pubsubTimeoutInterval, this.webServer.server)
     }
 }
 

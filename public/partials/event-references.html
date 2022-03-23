@@ -1,0 +1,257 @@
+<article>
+        <h3>Channel Ban Event</h3>
+        <p>Event fired when a user is banned from the channel.</p>
+
+    <pre><code class="hljs language-yaml">{
+    <span class="hljs-attr">event:</span> {
+        <span class="hljs-attr">broadcaster:</span> {
+            <span class="hljs-attr">displayName:</span> <span class="hljs-string">string</span>
+            <span class="hljs-attr">id:</span> <span class="hljs-string">number</span>
+            <span class="hljs-attr">login:</span> <span class="hljs-string">string</span>
+        }
+        <span class="hljs-attr">endsAt:</span> <span class="hljs-string">number</span>
+        <span class="hljs-attr">isPermanent:</span> <span class="hljs-string">boolean</span>
+        <span class="hljs-attr">moderator:</span> {
+            <span class="hljs-attr">displayName:</span> <span class="hljs-string">string</span>
+            <span class="hljs-attr">id:</span> <span class="hljs-string">number</span>
+            <span class="hljs-attr">login:</span> <span class="hljs-string">string</span>
+        }
+        <span class="hljs-attr">reason:</span> <span class="hljs-string">string</span>
+        <span class="hljs-attr">user:</span> {
+            <span class="hljs-attr">displayName:</span> <span class="hljs-string">string</span>
+            <span class="hljs-attr">id:</span> <span class="hljs-string">number</span>
+            <span class="hljs-attr">login:</span> <span class="hljs-string">string</span>
+        }
+    }
+    <span class="hljs-attr">nonce:</span> <span class="hljs-string">undefined</span> <span class="hljs-string">|</span> <span class="hljs-string">string</span>
+    <span class="hljs-attr">type:</span> <span class="hljs-string">&#x27;CHANNEL.BAN&#x27;</span>
+}</code></pre>
+    </article><article>
+        <h3>Channel Points Add Reward Event</h3>
+        <p>Event fired when a reward is added to the channel.</p>
+
+    <pre><code class="hljs language-yaml">{
+    <span class="hljs-attr">event:</span> {
+        <span class="hljs-attr">backgroundColor:</span> <span class="hljs-string">string</span>
+        <span class="hljs-attr">broadcaster:</span> {
+            <span class="hljs-attr">displayName:</span> <span class="hljs-string">string</span>
+            <span class="hljs-attr">id:</span> <span class="hljs-string">number</span>
+            <span class="hljs-attr">login:</span> <span class="hljs-string">string</span>
+        }
+        <span class="hljs-attr">cooldownExpiresAt:</span> <span class="hljs-string">undefined</span> <span class="hljs-string">|</span> <span class="hljs-string">number</span>
+        <span class="hljs-attr">cost:</span> <span class="hljs-string">number</span>
+        <span class="hljs-attr">defaultImage:</span> {
+            <span class="hljs-attr">url1x:</span> <span class="hljs-string">string</span>
+            <span class="hljs-attr">url2x:</span> <span class="hljs-string">string</span>
+            <span class="hljs-attr">url4x:</span> <span class="hljs-string">string</span>
+        }
+        <span class="hljs-attr">globalCooldown:</span> {
+            <span class="hljs-attr">isEnabled:</span> <span class="hljs-string">boolean</span>
+            <span class="hljs-attr">seconds:</span> <span class="hljs-string">number</span>
+        }
+        <span class="hljs-attr">image:</span> <span class="hljs-string">undefined</span> <span class="hljs-string">|</span> {
+            <span class="hljs-attr">url1x:</span> <span class="hljs-string">string</span>
+            <span class="hljs-attr">url2x:</span> <span class="hljs-string">string</span>
+            <span class="hljs-attr">url4x:</span> <span class="hljs-string">string</span>
+        }
+        <span class="hljs-attr">isEnabled:</span> <span class="hljs-string">boolean</span>
+        <span class="hljs-attr">isInStock:</span> <span class="hljs-string">boolean</span>
+        <span class="hljs-attr">isPaused:</span> <span class="hljs-string">boolean</span>
+        <span class="hljs-attr">isUserInputRequired:</span> <span class="hljs-string">boolean</span>
+        <span class="hljs-attr">maxPerStream:</span> {
+            <span class="hljs-attr">isEnabled:</span> <span class="hljs-string">boolean</span>
+            <span class="hljs-attr">value:</span> <span class="hljs-string">number</span>
+        }
+        <span class="hljs-attr">maxPerUserPerStream:</span> {
+            <span class="hljs-attr">isEnabled:</span> <span class="hljs-string">boolean</span>
+            <span class="hljs-attr">value:</span> <span class="hljs-string">number</span>
+        }
+        <span class="hljs-attr">prompt:</span> <span class="hljs-string">string</span>
+        <span class="hljs-attr">redemptionsRedeemedCurrentStream:</span> <span class="hljs-string">undefined</span> <span class="hljs-string">|</span> <span class="hljs-string">number</span>
+        <span class="hljs-attr">rewardId:</span> <span class="hljs-string">string</span>
+        <span class="hljs-attr">shouldRedemptionsSkipRequestQueue:</span> <span class="hljs-string">boolean</span>
+        <span class="hljs-attr">title:</span> <span class="hljs-string">string</span>
+    }
+    <span class="hljs-attr">nonce:</span> <span class="hljs-string">undefined</span> <span class="hljs-string">|</span> <span class="hljs-string">string</span>
+    <span class="hljs-attr">type:</span> <span class="hljs-string">&#x27;CHANNEL.REWARD.ADD&#x27;</span>
+}</code></pre>
+    </article><article>
+        <h3>Channel Points Redeem Reward Event</h3>
+        <p>Event fired when a reward is redeemed on the channel.</p>
+
+    <pre><code class="hljs language-yaml">{
+    <span class="hljs-attr">event:</span> {
+        <span class="hljs-attr">broadcaster:</span> {
+            <span class="hljs-attr">displayName:</span> <span class="hljs-string">string</span>
+            <span class="hljs-attr">id:</span> <span class="hljs-string">number</span>
+            <span class="hljs-attr">login:</span> <span class="hljs-string">string</span>
+        }
+        <span class="hljs-attr">redeemedAt:</span> <span class="hljs-string">number</span>
+        <span class="hljs-attr">redemptionId:</span> <span class="hljs-string">string</span>
+        <span class="hljs-attr">reward:</span> {
+            <span class="hljs-attr">cost:</span> <span class="hljs-string">number</span>
+            <span class="hljs-attr">prompt:</span> <span class="hljs-string">string</span>
+            <span class="hljs-attr">rewardId:</span> <span class="hljs-string">string</span>
+            <span class="hljs-attr">title:</span> <span class="hljs-string">string</span>
+        }
+        <span class="hljs-attr">status:</span> <span class="hljs-string">string</span>
+        <span class="hljs-attr">user:</span> {
+            <span class="hljs-attr">displayName:</span> <span class="hljs-string">string</span>
+            <span class="hljs-attr">id:</span> <span class="hljs-string">number</span>
+            <span class="hljs-attr">login:</span> <span class="hljs-string">string</span>
+        }
+        <span class="hljs-attr">userInput:</span> <span class="hljs-string">undefined</span> <span class="hljs-string">|</span> <span class="hljs-string">string</span>
+    }
+    <span class="hljs-attr">nonce:</span> <span class="hljs-string">undefined</span> <span class="hljs-string">|</span> <span class="hljs-string">string</span>
+    <span class="hljs-attr">type:</span> <span class="hljs-string">&#x27;CHANNEL.REWARD.REDEMPTION.ADD&#x27;</span>
+}</code></pre>
+    </article><article>
+        <h3>Channel Points Remove Reward Event</h3>
+        <p>Event fired when a reward is removed from the channel.</p>
+
+    <pre><code class="hljs language-yaml">{
+    <span class="hljs-attr">event:</span> {
+        <span class="hljs-attr">backgroundColor:</span> <span class="hljs-string">string</span>
+        <span class="hljs-attr">broadcaster:</span> {
+            <span class="hljs-attr">displayName:</span> <span class="hljs-string">string</span>
+            <span class="hljs-attr">id:</span> <span class="hljs-string">number</span>
+            <span class="hljs-attr">login:</span> <span class="hljs-string">string</span>
+        }
+        <span class="hljs-attr">cooldownExpiresAt:</span> <span class="hljs-string">undefined</span> <span class="hljs-string">|</span> <span class="hljs-string">number</span>
+        <span class="hljs-attr">cost:</span> <span class="hljs-string">number</span>
+        <span class="hljs-attr">defaultImage:</span> {
+            <span class="hljs-attr">url1x:</span> <span class="hljs-string">string</span>
+            <span class="hljs-attr">url2x:</span> <span class="hljs-string">string</span>
+            <span class="hljs-attr">url4x:</span> <span class="hljs-string">string</span>
+        }
+        <span class="hljs-attr">globalCooldown:</span> {
+            <span class="hljs-attr">isEnabled:</span> <span class="hljs-string">boolean</span>
+            <span class="hljs-attr">seconds:</span> <span class="hljs-string">number</span>
+        }
+        <span class="hljs-attr">image:</span> <span class="hljs-string">undefined</span> <span class="hljs-string">|</span> {
+            <span class="hljs-attr">url1x:</span> <span class="hljs-string">string</span>
+            <span class="hljs-attr">url2x:</span> <span class="hljs-string">string</span>
+            <span class="hljs-attr">url4x:</span> <span class="hljs-string">string</span>
+        }
+        <span class="hljs-attr">isEnabled:</span> <span class="hljs-string">boolean</span>
+        <span class="hljs-attr">isInStock:</span> <span class="hljs-string">boolean</span>
+        <span class="hljs-attr">isPaused:</span> <span class="hljs-string">boolean</span>
+        <span class="hljs-attr">isUserInputRequired:</span> <span class="hljs-string">boolean</span>
+        <span class="hljs-attr">maxPerStream:</span> {
+            <span class="hljs-attr">isEnabled:</span> <span class="hljs-string">boolean</span>
+            <span class="hljs-attr">value:</span> <span class="hljs-string">number</span>
+        }
+        <span class="hljs-attr">maxPerUserPerStream:</span> {
+            <span class="hljs-attr">isEnabled:</span> <span class="hljs-string">boolean</span>
+            <span class="hljs-attr">value:</span> <span class="hljs-string">number</span>
+        }
+        <span class="hljs-attr">prompt:</span> <span class="hljs-string">string</span>
+        <span class="hljs-attr">redemptionsRedeemedCurrentStream:</span> <span class="hljs-string">undefined</span> <span class="hljs-string">|</span> <span class="hljs-string">number</span>
+        <span class="hljs-attr">rewardId:</span> <span class="hljs-string">string</span>
+        <span class="hljs-attr">shouldRedemptionsSkipRequestQueue:</span> <span class="hljs-string">boolean</span>
+        <span class="hljs-attr">title:</span> <span class="hljs-string">string</span>
+    }
+    <span class="hljs-attr">nonce:</span> <span class="hljs-string">undefined</span> <span class="hljs-string">|</span> <span class="hljs-string">string</span>
+    <span class="hljs-attr">type:</span> <span class="hljs-string">&#x27;CHANNEL.REWARD.REMOVE&#x27;</span>
+}</code></pre>
+    </article><article>
+        <h3>Channel Points Update Redemption Event</h3>
+        <p>Event fired when a reward redemption is updated on the channel.</p>
+
+    <pre><code class="hljs language-yaml">{
+    <span class="hljs-attr">event:</span> {
+        <span class="hljs-attr">broadcaster:</span> {
+            <span class="hljs-attr">displayName:</span> <span class="hljs-string">string</span>
+            <span class="hljs-attr">id:</span> <span class="hljs-string">number</span>
+            <span class="hljs-attr">login:</span> <span class="hljs-string">string</span>
+        }
+        <span class="hljs-attr">redeemedAt:</span> <span class="hljs-string">number</span>
+        <span class="hljs-attr">redemptionId:</span> <span class="hljs-string">string</span>
+        <span class="hljs-attr">reward:</span> {
+            <span class="hljs-attr">cost:</span> <span class="hljs-string">number</span>
+            <span class="hljs-attr">prompt:</span> <span class="hljs-string">string</span>
+            <span class="hljs-attr">rewardId:</span> <span class="hljs-string">string</span>
+            <span class="hljs-attr">title:</span> <span class="hljs-string">string</span>
+        }
+        <span class="hljs-attr">status:</span> <span class="hljs-string">string</span>
+        <span class="hljs-attr">user:</span> {
+            <span class="hljs-attr">displayName:</span> <span class="hljs-string">string</span>
+            <span class="hljs-attr">id:</span> <span class="hljs-string">number</span>
+            <span class="hljs-attr">login:</span> <span class="hljs-string">string</span>
+        }
+        <span class="hljs-attr">userInput:</span> <span class="hljs-string">undefined</span> <span class="hljs-string">|</span> <span class="hljs-string">string</span>
+    }
+    <span class="hljs-attr">nonce:</span> <span class="hljs-string">undefined</span> <span class="hljs-string">|</span> <span class="hljs-string">string</span>
+    <span class="hljs-attr">type:</span> <span class="hljs-string">&#x27;CHANNEL.REWARD.REDEMPTION.UPDATE&#x27;</span>
+}</code></pre>
+    </article><article>
+        <h3>Channel Points Update Reward Event</h3>
+        <p>Event fired when a reward is updated on the channel.</p>
+
+    <pre><code class="hljs language-yaml">{
+    <span class="hljs-attr">event:</span> {
+        <span class="hljs-attr">backgroundColor:</span> <span class="hljs-string">string</span>
+        <span class="hljs-attr">broadcaster:</span> {
+            <span class="hljs-attr">displayName:</span> <span class="hljs-string">string</span>
+            <span class="hljs-attr">id:</span> <span class="hljs-string">number</span>
+            <span class="hljs-attr">login:</span> <span class="hljs-string">string</span>
+        }
+        <span class="hljs-attr">cooldownExpiresAt:</span> <span class="hljs-string">undefined</span> <span class="hljs-string">|</span> <span class="hljs-string">number</span>
+        <span class="hljs-attr">cost:</span> <span class="hljs-string">number</span>
+        <span class="hljs-attr">defaultImage:</span> {
+            <span class="hljs-attr">url1x:</span> <span class="hljs-string">string</span>
+            <span class="hljs-attr">url2x:</span> <span class="hljs-string">string</span>
+            <span class="hljs-attr">url4x:</span> <span class="hljs-string">string</span>
+        }
+        <span class="hljs-attr">globalCooldown:</span> {
+            <span class="hljs-attr">isEnabled:</span> <span class="hljs-string">boolean</span>
+            <span class="hljs-attr">seconds:</span> <span class="hljs-string">number</span>
+        }
+        <span class="hljs-attr">image:</span> <span class="hljs-string">undefined</span> <span class="hljs-string">|</span> {
+            <span class="hljs-attr">url1x:</span> <span class="hljs-string">string</span>
+            <span class="hljs-attr">url2x:</span> <span class="hljs-string">string</span>
+            <span class="hljs-attr">url4x:</span> <span class="hljs-string">string</span>
+        }
+        <span class="hljs-attr">isEnabled:</span> <span class="hljs-string">boolean</span>
+        <span class="hljs-attr">isInStock:</span> <span class="hljs-string">boolean</span>
+        <span class="hljs-attr">isPaused:</span> <span class="hljs-string">boolean</span>
+        <span class="hljs-attr">isUserInputRequired:</span> <span class="hljs-string">boolean</span>
+        <span class="hljs-attr">maxPerStream:</span> {
+            <span class="hljs-attr">isEnabled:</span> <span class="hljs-string">boolean</span>
+            <span class="hljs-attr">value:</span> <span class="hljs-string">number</span>
+        }
+        <span class="hljs-attr">maxPerUserPerStream:</span> {
+            <span class="hljs-attr">isEnabled:</span> <span class="hljs-string">boolean</span>
+            <span class="hljs-attr">value:</span> <span class="hljs-string">number</span>
+        }
+        <span class="hljs-attr">prompt:</span> <span class="hljs-string">string</span>
+        <span class="hljs-attr">redemptionsRedeemedCurrentStream:</span> <span class="hljs-string">undefined</span> <span class="hljs-string">|</span> <span class="hljs-string">number</span>
+        <span class="hljs-attr">rewardId:</span> <span class="hljs-string">string</span>
+        <span class="hljs-attr">shouldRedemptionsSkipRequestQueue:</span> <span class="hljs-string">boolean</span>
+        <span class="hljs-attr">title:</span> <span class="hljs-string">string</span>
+    }
+    <span class="hljs-attr">nonce:</span> <span class="hljs-string">undefined</span> <span class="hljs-string">|</span> <span class="hljs-string">string</span>
+    <span class="hljs-attr">type:</span> <span class="hljs-string">&#x27;CHANNEL.REWARD.UPDATE&#x27;</span>
+}</code></pre>
+    </article><article>
+        <h3>Follow Event</h3>
+        <p>Event fired when the channel gets a new follower.</p>
+
+    <pre><code class="hljs language-yaml">{
+    <span class="hljs-attr">event:</span> {
+        <span class="hljs-attr">broadcaster:</span> {
+            <span class="hljs-attr">displayName:</span> <span class="hljs-string">string</span>
+            <span class="hljs-attr">id:</span> <span class="hljs-string">number</span>
+            <span class="hljs-attr">login:</span> <span class="hljs-string">string</span>
+        }
+        <span class="hljs-attr">followedAt:</span> <span class="hljs-string">number</span>
+        <span class="hljs-attr">user:</span> {
+            <span class="hljs-attr">displayName:</span> <span class="hljs-string">string</span>
+            <span class="hljs-attr">id:</span> <span class="hljs-string">number</span>
+            <span class="hljs-attr">login:</span> <span class="hljs-string">string</span>
+        }
+    }
+    <span class="hljs-attr">nonce:</span> <span class="hljs-string">undefined</span> <span class="hljs-string">|</span> <span class="hljs-string">string</span>
+    <span class="hljs-attr">type:</span> <span class="hljs-string">&#x27;CHANNEL.FOLLOW&#x27;</span>
+}</code></pre>
+    </article>

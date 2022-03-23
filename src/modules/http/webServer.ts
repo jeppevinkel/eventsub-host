@@ -1,10 +1,10 @@
-import express, {Express, NextFunction, Request, Response} from "express"
-import {Logger} from "../logging"
-import {Server} from "http"
+import express, {Express, NextFunction, Request, Response} from 'express'
+import {Logger} from '../logging'
+import {Server} from 'http'
 import axios from 'axios'
 import session from 'express-session'
 import cookieParser from 'cookie-parser'
-import {Main} from "../../index"
+import {Main} from '../../index'
 import {
     IChannelPointsAddReward,
     IChannelPointsRedeemReward,
@@ -13,16 +13,16 @@ import {
     IChannelPointsUpdateReward,
     IFollow,
     Notification
-} from "./interfaces"
-import {EventTypes} from "./constants/eventTypes"
+} from './interfaces'
+import {EventTypes} from './constants/eventTypes'
 import {
     HMAC_PREFIX,
     MESSAGE_TYPE,
-    MESSAGE_TYPE_NOTIFICATION,
+    MESSAGE_TYPE_NOTIFICATION, MESSAGE_TYPE_VERIFICATION,
     TWITCH_MESSAGE_ID,
     TWITCH_MESSAGE_SIGNATURE,
     TWITCH_MESSAGE_TIMESTAMP
-} from "./constants/eventsub"
+} from './constants/eventsub'
 import {
     IChannelPointsAddRewardEvent,
     IChannelPointsRedeemRewardEvent,
@@ -30,12 +30,14 @@ import {
     IChannelPointsUpdateRedemptionEvent,
     IChannelPointsUpdateRewardEvent,
     IFollowEvent
-} from "../pubsub/interfaces/messages"
-import {MessageTypes} from "../pubsub/constants/messageTypes"
+} from '../pubsub/interfaces/messages'
+import {MessageTypes} from '../pubsub/constants/messageTypes'
 import * as crypto from 'crypto'
-import {Buffer} from "buffer"
-import {IUserData} from "./interfaces/IUserData";
-import MySQLStore from "express-mysql-session";
+import {Buffer} from 'buffer'
+import {IUserData} from './interfaces/IUserData'
+import MySQLStore from 'express-mysql-session'
+import path from 'path'
+import * as fs from 'fs/promises'
 
 declare module 'express-session' {
     interface SessionData {
@@ -59,15 +61,16 @@ export class WebServer {
         this.app.set('view engine', 'ejs')
 
         this.app.use(cookieParser())
+        this.app.use(express.static(path.join(__dirname, '..', '..', '..', 'public')))
 
         // @ts-ignore
         const MySQLStoreClass = MySQLStore(session)
-        const sessionStore = new MySQLStoreClass({}, this.main.database.pool);
+        const sessionStore = new MySQLStoreClass({}, this.main.database.pool)
 
         this.app.use(session({
             secret: process.env.SESSION_SECRET ?? '',
             saveUninitialized: true,
-            cookie: { maxAge: 1000 * 60 * 60 * 24 },
+            cookie: {maxAge: 1000 * 60 * 60 * 24},
             resave: false,
             store: sessionStore,
         }))
@@ -86,15 +89,16 @@ export class WebServer {
 
     private readonly publicRoutes = express.Router()
     private readonly eventsubRoutes = express.Router()
+    private readonly apiRoutes = express.Router()
 
     private static injectUrl(req: Request, res: Response, next: NextFunction) {
-       res.locals.url = req.url
-       next()
+        res.locals.url = req.url
+        next()
     }
 
     private injectUser(self: WebServer) {
-    return async function
-        injectUser(req: Request, res: Response, next: NextFunction) {
+        return async function
+            injectUser(req: Request, res: Response, next: NextFunction) {
             res.locals.user = req!.session!.userId ? await self.main.database.userDAO.getUser(req.session.userId) : undefined
             res.locals.authenticated = !!res.locals.user
             next()
@@ -106,11 +110,18 @@ export class WebServer {
 
         this.publicRoutes.use(WebServer.injectUrl)
         this.publicRoutes.use(self.injectUser(self))
+        this.apiRoutes.use(self.injectUser(self))
 
         this.publicRoutes.get('/', async function (req, res) {
             self.logger.info(req.session.id)
 
             res.render('index')
+        })
+
+        this.publicRoutes.get('/docs', async function (req, res) {
+            res.locals.docs = await fs.readFile('./public/partials/event-references.html')
+
+            res.render('docs')
         })
 
         this.publicRoutes.get('/preferences', async function (req, res) {
@@ -130,7 +141,7 @@ export class WebServer {
             let url = `https://id.twitch.tv/oauth2/authorize?client_id=${process.env.TWITCH_CLIENT_ID}&redirect_uri=${process.env.TWITCH_REDIRECT_URI}&response_type=code&scope=user:read:email`
             res.redirect(url)
         })
-        
+
         this.publicRoutes.get('/auth/callback', function (req: Request, res) {
             // res.render('loading', data)
             let code = req.query.code
@@ -156,7 +167,7 @@ export class WebServer {
                                 displayName: userData.displayName,
                                 email: userData.email,
                                 profileImage: userData.profileImage,
-                                apiToken: null
+                                apiToken: undefined
                             }).catch(err => {
                                 self.logger.error(err)
                             })
@@ -176,13 +187,15 @@ export class WebServer {
         })
 
         this.publicRoutes.get('/logout', function (req, res) {
-            req.session.destroy(() => {})
+            req.session.destroy(() => {
+            })
             res.redirect('/')
         })
 
         this.eventsubRoutes.use(express.json())
 
         this.eventsubRoutes.post('/', function (req, res) {
+            self.logger.info(req.body)
             let secret = WebServer.getSecret()
             let hmacMessage = WebServer.getHmacMessage(req)
             let hmac = HMAC_PREFIX + WebServer.getHmac(secret, hmacMessage)
@@ -225,15 +238,48 @@ export class WebServer {
 
                 res.sendStatus(204)
                 res.end()
-            }
-            else {
+                return
+            } else if (MESSAGE_TYPE_VERIFICATION == req.headers[MESSAGE_TYPE] && Object.values(EventTypes).includes(req.body.subscription.type)) {
+                res.status(200).send(req.body.challenge)
+                res.end()
+                return
+            } else {
                 res.sendStatus(403)
                 res.end()
             }
         })
 
+        this.apiRoutes.post('/user/new-token', async function (req, res) {
+            let user = res.locals.user
+            if (user) {
+                let newToken!: string
+
+                let tries: number = 0
+                let result!: boolean
+                do {
+                    newToken = WebServer.generateToken()
+                    result = await self.main.database.userDAO.updateUserApiToken(user, newToken)
+                } while (!result && tries++ < 10)
+
+                if (result) {
+                    res.status(200).json({
+                        token: newToken
+                    })
+                } else {
+                    res.status(500).json({
+                        message: 'Failed to update user token'
+                    })
+                }
+            } else {
+                res.status(401).send({
+                    message: 'Unauthorized'
+                })
+            }
+        })
+
         self.app.use('/', self.publicRoutes)
         self.app.use('/eventsub', self.eventsubRoutes)
+        self.app.use('/api', self.apiRoutes)
     }
 
     /////////////////////////////
@@ -245,7 +291,7 @@ export class WebServer {
         self.logger.info(`${event.user_name} just followed ${event.broadcaster_user_name}`)
 
         let pubsubMessage: IFollowEvent = {
-            type: MessageTypes.channelPointsAddReward,
+            type: MessageTypes.follow as 'CHANNEL.FOLLOW',
             event: {
                 user: {
                     id: parseInt(event.user_id),
@@ -270,7 +316,7 @@ export class WebServer {
         self.logger.info(`${event.title} added as a reward to ${event.broadcaster_user_name} for ${event.cost} points`)
 
         let pubsubMessage: IChannelPointsAddRewardEvent = {
-            type: MessageTypes.follow,
+            type: MessageTypes.channelPointsAddReward,
             event: {
                 broadcaster: {
                     id: parseInt(event.broadcaster_user_id),
@@ -508,6 +554,10 @@ export class WebServer {
         return ''
     }
 
+    private static getMessageType(req: any): string {
+        return req.headers[TWITCH_MESSAGE_ID]
+    }
+
     private static getHmac(secret: string, message: string): string {
         return crypto.createHmac('sha256', secret)
             .update(message)
@@ -526,7 +576,7 @@ export class WebServer {
                 headers: {
                     accept: 'application/json',
                     authorization: `Bearer ${accessToken}`,
-                    "client-id": process.env.TWITCH_CLIENT_ID ?? '',
+                    'client-id': process.env.TWITCH_CLIENT_ID ?? '',
                 },
             }).then(response => {
                 if (response.data.data.length >= 1) {
@@ -545,5 +595,18 @@ export class WebServer {
                 reject(err)
             })
         })
+    }
+
+    private static generateToken(length: number = 16): string {
+        const stringArray = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
+
+        let rndString = ""
+
+        for (let i = 1; i < length; i++) {
+            const rndNum = crypto.randomInt(stringArray.length)
+            rndString = rndString + stringArray[rndNum]
+        }
+
+        return rndString
     }
 }

@@ -1,4 +1,6 @@
-export const ERR_BADMESSAGE = 'BAD_MESSAGE'
-export const ERR_BADAUTH = 'ERR_BADAUTH'
-export const ERR_SERVER = 'ERR_SERVER'
-export const ERR_BADTOPIC = 'ERR_BADTOPIC'
+export const ErrorTypes = {
+    InvalidToken: 'INVALID_TOKEN',
+    InvalidMessage: 'INVALID_MESSAGE',
+    InvalidTopic: 'INVALID_TOPIC',
+    ServerError: 'SERVER_ERROR',
+}

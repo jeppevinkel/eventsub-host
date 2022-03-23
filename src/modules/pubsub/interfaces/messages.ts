@@ -5,12 +5,19 @@ export interface IMessage {
 
 export interface IResponse extends IMessage {
     error?: string
+    message?: string
 }
 
 export interface IAuthentication extends IMessage {
-    authToken: string
+    token: string
 }
 
+/**
+ * Event fired when the channel gets a new follower.
+ *
+ * @title Follow Event
+ * @property type 'CHANNEL.FOLLOW'
+ */
 export interface IFollowEvent extends IMessage {
     event: {
         user: {
@@ -27,6 +34,12 @@ export interface IFollowEvent extends IMessage {
     }
 }
 
+/**
+ * Event fired when a user is banned from the channel.
+ *
+ * @title Channel Ban Event
+ * @property type 'CHANNEL.BAN'
+ */
 export interface IChannelBanEvent extends IMessage {
     event: {
         user: {
@@ -70,6 +83,12 @@ export interface IChannelUnbanEvent extends IMessage {
     }
 }
 
+/**
+ * Event fired when a reward is added to the channel.
+ *
+ * @title Channel Points Add Reward Event
+ * @property type 'CHANNEL.REWARD.ADD'
+ */
 export interface IChannelPointsAddRewardEvent extends IMessage {
     event: {
         rewardId: string
@@ -114,6 +133,12 @@ export interface IChannelPointsAddRewardEvent extends IMessage {
     }
 }
 
+/**
+ * Event fired when a reward is updated on the channel.
+ *
+ * @title Channel Points Update Reward Event
+ * @property type 'CHANNEL.REWARD.UPDATE'
+ */
 export interface IChannelPointsUpdateRewardEvent extends IMessage {
     event: {
         rewardId: string
@@ -158,6 +183,12 @@ export interface IChannelPointsUpdateRewardEvent extends IMessage {
     }
 }
 
+/**
+ * Event fired when a reward is removed from the channel.
+ *
+ * @title Channel Points Remove Reward Event
+ * @property type 'CHANNEL.REWARD.REMOVE'
+ */
 export interface IChannelPointsRemoveRewardEvent extends IMessage {
     event: {
         rewardId: string
@@ -202,6 +233,12 @@ export interface IChannelPointsRemoveRewardEvent extends IMessage {
     }
 }
 
+/**
+ * Event fired when a reward is redeemed on the channel.
+ *
+ * @title Channel Points Redeem Reward Event
+ * @property type 'CHANNEL.REWARD.REDEMPTION.ADD'
+ */
 export interface IChannelPointsRedeemRewardEvent extends IMessage {
     event: {
         redemptionId: string
@@ -227,6 +264,12 @@ export interface IChannelPointsRedeemRewardEvent extends IMessage {
     }
 }
 
+/**
+ * Event fired when a reward redemption is updated on the channel.
+ *
+ * @title Channel Points Update Redemption Event
+ * @property type 'CHANNEL.REWARD.REDEMPTION.UPDATE'
+ */
 export interface IChannelPointsUpdateRedemptionEvent extends IMessage {
     event: {
         redemptionId: string

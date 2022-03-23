@@ -6,7 +6,7 @@ export interface UserModel {
     displayName: string
     profileImage: string
     email: string
-    apiToken: string | null
+    apiToken?: string
 }
 
 export class UserDAO {
@@ -18,7 +18,7 @@ export class UserDAO {
 
     public async getUser(id: number): Promise<UserModel | undefined> {
         const [rows] = await this.pool.execute<RowDataPacket[]>(
-            'SELECT * FROM `users` WHERE `id` = ?',
+            'SELECT `id`, `display_name`, `profile_image`, `email` FROM `users` WHERE `id` = ?',
             [id])
 
         return rows[0] ? {
@@ -26,13 +26,12 @@ export class UserDAO {
             displayName: rows[0]['display_name'],
             email: rows[0]['email'],
             profileImage: rows[0]['profile_image'],
-            apiToken: rows[0]['api_token']
         } : undefined
     }
 
     public async getUsers(): Promise<UserModel[]> {
         const [rows] = await this.pool.execute<RowDataPacket[]>(
-            'SELECT * FROM `users`',
+            'SELECT `id`, `display_name`, `profile_image`, `email` FROM `users`',
             [])
 
         return rows.map<UserModel>((row) => {
@@ -40,7 +39,6 @@ export class UserDAO {
                 id: row['id'],
                 email: row['email'],
                 profileImage: row['profile_image'],
-                apiToken: row['api_token'],
                 displayName: row['display_name']
             }
         })
@@ -48,20 +46,37 @@ export class UserDAO {
 
     public async insertUser(user: UserModel): Promise<OkPacket> {
         const [result] = await this.pool.query<OkPacket>(
-            'INSERT INTO `users` (id, display_name, profile_image, email, api_token) VALUES (?, ?, ?, ?, ?)',
-            [user.id, user.displayName, user.profileImage, user.email, user.apiToken]
+            'INSERT INTO `users` (id, display_name, profile_image, email) VALUES (?, ?, ?, ?)',
+            [user.id, user.displayName, user.profileImage, user.email]
         )
         return result
     }
 
     public async updateUser(user: UserModel) {
         const [result] = await this.pool.execute(
-            'UPDATE `users` SET display_name = ?, profile_image = ?, email = ?, api_token = ?',
-            [user.displayName, user.profileImage, user.email, user.apiToken]
+            'UPDATE `users` SET display_name = ?, profile_image = ?, email = ?',
+            [user.displayName, user.profileImage, user.email]
         )
+        return result
     }
 
-    public async getIdFromToken(token: string): Promise<number> {
+    public async updateUserApiToken(user: UserModel, apiToken: string): Promise<boolean> {
+        try {
+            const [result] = await this.pool.query<OkPacket>(
+                'UPDATE `users` SET api_token = ? WHERE id = ?',
+                [apiToken, user.id]
+            )
+            return true
+        } catch (e) {
+            return false
+        }
+    }
+
+    public async getIdFromToken(token: string): Promise<number|undefined> {
+        if (token === undefined) {
+            return undefined
+        }
+
         const [rows] = await this.pool.execute<RowDataPacket[]>(
             'SELECT id FROM `users` WHERE `api_token` = ?',
             [token])

@@ -5,5 +5,6 @@ export const TWITCH_MESSAGE_SIGNATURE = 'Twitch-Eventsub-Message-Signature'.toLo
 
 export const MESSAGE_TYPE_NOTIFICATION = 'notification'
 export const MESSAGE_TYPE_REVOCATION = 'revocation'
+export const MESSAGE_TYPE_VERIFICATION = 'webhook_callback_verification'
 
 export const HMAC_PREFIX = 'sha256='

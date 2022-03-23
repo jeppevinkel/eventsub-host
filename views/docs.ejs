@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <%- include('partials/head'); %>
+    <link rel="stylesheet"
+          href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/styles/stackoverflow-dark.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</head>
+<body class="bg-secondary text-white">
+<header>
+    <%- include('partials/header'); %>
+</header>
+
+<main class="container">
+    <div class="mt-0 p-5">
+        <section>
+            <h2>WebSocket API</h2>
+
+            <article>
+                <h3>Connection Info</h3>
+                <p>
+                    The websocket server is accessible via <code>ws://<%= process.env.APP_URL ?? 'localhost' %></code>.
+                </p>
+            </article>
+
+            <article>
+                <h3>Authentication</h3>
+                <p>Any new websocket connections must authenticate with an API token in order to receive events.</p>
+                <pre><code>{
+    "type": "AUTH",
+    "token": "my-secret-token"
+}</code></pre>
+            </article>
+
+            <article>
+                <h3>Ping</h3>
+                <p>In order to keep the connection active, you must send a ping to the server at least once every minute
+                    to show your application is still functional.</p>
+                <pre><code>{
+    "type": "PING"
+}</code></pre>
+            </article>
+        </section>
+
+        <section>
+            <h2>Event Reference</h2>
+
+            <%- locals.docs %>
+        </section>
+    </div>
+</main>
+
+<%- include('partials/scripts'); %>
+
+<script>
+
+</script>
+</body>
+</html>

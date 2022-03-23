@@ -4,35 +4,66 @@
     <%- include('partials/head'); %>
 </head>
 <body class="bg-secondary text-white">
-    <header>
-        <%- include('partials/header'); %>
-    </header>
+<header>
+    <%- include('partials/header'); %>
+</header>
 
-    <main class="container">
-        <div class="mt-0 p-5">
-            <h1>Preferences</h1>
+<main class="container">
+    <div class="mt-0 p-5">
+        <h1>Preferences</h1>
+    </div>
+
+    <form>
+        <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" role="switch" id="followEventSwitch">
+            <label class="form-check-label" for="followEventSwitch">Follow event</label>
         </div>
-
-        <form>
-            <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" role="switch" id="followEventSwitch">
-                <label class="form-check-label" for="followEventSwitch">Follow event</label>
-            </div>
-            <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" role="switch" id="channelPointsRedeemRewardEventSwitch">
-                <label class="form-check-label" for="channelPointsRedeemRewardEventSwitch">Channel point redeem reward event</label>
-            </div>
-        </form>
-
-        <div class="">
-            <h5 class="form-label">API Token</h5>
-            <p>Used to access the websocket connection. Store the token a safe place after creation.</p>
-            <button type="button" class="btn btn-dark" data-bs-toggle="tooltip" data-bs-placement="top" title="This will invalidate the old!">
-                New Token
-            </button>
+        <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" role="switch" id="channelPointsRedeemRewardEventSwitch">
+            <label class="form-check-label" for="channelPointsRedeemRewardEventSwitch">Channel point redeem reward
+                event</label>
         </div>
-    </main>
+    </form>
 
-    <%- include('partials/scripts'); %>
+    <div class="">
+        <h5 class="form-label">API Token</h5>
+        <p>Used to access the websocket connection. Store the token a safe place after creation.</p>
+        <div class="row">
+            <div class="col">
+                <div class="input-group">
+                    <button type="button" class="btn btn-dark" data-bs-toggle="tooltip" data-bs-placement="top"
+                            title="This will invalidate the old!" onclick="requestNewToken()">
+                        New Token
+                    </button>
+                    <input type="text" id="tokenDisplay" class="form-control" value="" readonly/>
+                </div>
+            </div>
+            <div class="col"></div>
+        </div>
+    </div>
+</main>
+
+<script>
+    function requestNewToken() {
+        $.ajax({
+            url: '/api/user/new-token',
+            method: 'POST',
+            success: function (data) {
+                console.log(data.token)
+                $('#tokenDisplay').val(data.token)
+            },
+            error: function (data) {
+                console.error(data)
+                $('#tokenDisplay').val('Something went wrong!')
+            }
+        })
+    }
+
+    $("#tokenDisplay").on("click", function () {
+        $(this).select()
+    })
+</script>
+
+<%- include('partials/scripts'); %>
 </body>
 </html>
